@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wallpaper/models/photo_models.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -8,14 +9,17 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  List<PhotoModel> photos = [];
+  TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: EdgeInsets.only(top: 50),
-        child:  Column(
+        margin: const EdgeInsets.only(top: 50),
+        child: Column(
           children: [
-            Center(
+            const Center(
               child: Text(
                 "Search",
                 style: TextStyle(
@@ -26,16 +30,19 @@ class _SearchState extends State<Search> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-              margin: EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              margin: const EdgeInsets.symmetric(horizontal: 28),
               decoration: BoxDecoration(
-                color: Color(0xFFececf8),
+                color: const Color(0xFFececf8),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: TextField(
-                decoration: InputDecoration(border: InputBorder.none, suffixIcon: Icon(Icons.search_outlined)),
+                controller: searchController,
+                decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    suffixIcon: Icon(Icons.search_outlined)),
               ),
             ),
           ],
