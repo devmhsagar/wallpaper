@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:wallpaper/models/photo_models.dart';
 import 'package:http/http.dart' as http;
+import 'package:wallpaper/models/photo_models.dart';
+import 'package:wallpaper/widget/widget.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -15,18 +16,27 @@ class _SearchState extends State<Search> {
   List<PhotoModel> photos = [];
   TextEditingController searchController = TextEditingController();
 
-  getSearchWallpaper() async {
+  getSearchWallpaper(String searchQuery) async {
     await http.get(
-        Uri.parse("https://api.pexels.com/v1/search?query=nature&per_page=1"),
-        headers: {"Authorization": "HAY6KTU4pxe96slnVBEzwWDj6qoeZBmgkr4dZ2df8sk3xXSHSidIOXfh"}).then((value) {});
-
-    Map<String, dynamic> jsonData = jsonDecode(value.body);
-
-    jsonData["photos"].forEach((element) {
-      PhotoModel photoModel = PhotoModel.fromMap(element);
-      photos.add(photoModel);
+      Uri.parse(
+        "https://api.pexels.com/v1/search?query=$searchQuery&per_page=30",
+      ),
+      headers: {
+        "Authorization":
+            "HAY6KTU4pxe96slnVBEzwWDj6qoeZBmgkr4dZ2df8sk3xXSHSidIOXfh"
+      },
+    ).then((value) {
+      if (value.statusCode == 200) {
+        Map<String, dynamic> jsonData = jsonDecode(value.body);
+        jsonData["photos"].forEach((element) {
+          PhotoModel photoModel = PhotoModel.fromMap(element);
+          photos.add(photoModel);
+        });
+        setState(() {});
+      } else {
+        print('Request failed with status: ${value.statusCode}.');
+      }
     });
-    setState(() {});
   }
 
   @override
@@ -36,7 +46,7 @@ class _SearchState extends State<Search> {
         margin: const EdgeInsets.only(top: 50),
         child: Column(
           children: [
-            const Center(
+            Center(
               child: Text(
                 "Search",
                 style: TextStyle(
@@ -57,11 +67,17 @@ class _SearchState extends State<Search> {
               ),
               child: TextField(
                 controller: searchController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                     border: InputBorder.none,
-                    suffixIcon: Icon(Icons.search_outlined)),
+                    suffixIcon: GestureDetector(
+                        onTap: () {
+                          getSearchWallpaper(searchController.text);
+                        },
+                        child: Icon(Icons.search_outlined))),
               ),
             ),
+            const SizedBox(height: 20),
+            Expanded(child: walpaper(photos, context))
           ],
         ),
       ),
